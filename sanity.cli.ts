@@ -5,11 +5,8 @@ export default defineCliConfig({
     projectId: 'yv2hgb0y',
     dataset: 'production'
   },
-  /**
-   * Enable auto-updates for studios.
-   * Learn more at https://www.sanity.io/docs/cli#auto-updates
-   */
-  autoUpdates: true,
+  // Build the reviewed local packages instead of an unpinned remote runtime.
+  deployment: {autoUpdates: false},
   studioHost: 'ali-portfolio-studio'
 
 })

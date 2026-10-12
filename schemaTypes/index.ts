@@ -1,4 +1,6 @@
 import { workType } from './work'
 import { experienceType } from './experience'
 import { coursesType } from './courses'
-export const schemaTypes = [ coursesType , experienceType, workType]
+import {skillType} from './skill'
+import {resumeSettingsType} from './resumeSettings'
+export const schemaTypes = [ coursesType , experienceType, workType, skillType, resumeSettingsType]

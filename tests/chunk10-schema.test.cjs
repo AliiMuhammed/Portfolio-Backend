@@ -1,3 +1,4 @@
+const {URL} = require('node:url')
 const {test} = require('node:test')
 const assert = require('node:assert/strict')
 const fs = require('node:fs')
@@ -9,13 +10,14 @@ const load = (name) => {
   const js = ts.transpileModule(fs.readFileSync(`schemaTypes/${name}.ts`, 'utf8'), {compilerOptions: {module: ts.ModuleKind.CommonJS}}).outputText
   vm.runInNewContext(js, {exports, require: spec => {
     if (spec === 'sanity') return {defineType: value => value, defineField: value => value}
+    if(spec==='./richContent'){const rich={};vm.runInNewContext(ts.transpileModule(fs.readFileSync('schemaTypes/richContent.ts','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS}}).outputText,{exports:rich,URL,require:()=>({defineField:v=>v})});return rich}
     if (spec.endsWith('SkillIconInput')) return {SkillIconInput: () => null}
     const helpers = {}
     const source = ts.transpileModule(fs.readFileSync('schemaTypes/inputs/iconIdentifiers.ts', 'utf8'), {compilerOptions: {module: ts.ModuleKind.CommonJS}}).outputText
     vm.runInNewContext(source, {exports: helpers})
     return helpers
   }})
-  return Object.values(exports)[0]
+  return exports[`${name}Type`]
 }
 const field = (schema, name) => schema.fields.find(f => f.name === name)
 test('Work keeps every original field and adds an opt-in flag and optional descriptions', () => {

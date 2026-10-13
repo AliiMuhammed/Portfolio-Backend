@@ -3,7 +3,7 @@ const assert=require('node:assert/strict')
 const {URL}=require('node:url')
 const fs=require('node:fs'),vm=require('node:vm'),ts=require('typescript')
 const exportsObject={}
-vm.runInNewContext(ts.transpileModule(fs.readFileSync('schemaTypes/article.ts','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS}}).outputText,{exports:exportsObject,URL,require:()=>({defineType:v=>v,defineField:v=>v})})
+vm.runInNewContext(ts.transpileModule(fs.readFileSync('schemaTypes/article.ts','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS}}).outputText,{exports:exportsObject,URL,require:spec=>{if(spec==='sanity')return {defineType:v=>v,defineField:v=>v};const helpers={};vm.runInNewContext(ts.transpileModule(fs.readFileSync('schemaTypes/richContent.ts','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS}}).outputText,{exports:helpers,URL,require:()=>({defineField:v=>v})});return helpers}})
 const schema=exportsObject.articleType
 const field=name=>schema.fields.find(f=>f.name===name)
 const ruleFor=definition=>{const recorded={};const rule={required(){recorded.required=true;return rule},max(v){recorded.max=v;return rule},min(v){recorded.min=v;return rule},unique(){return rule},valid(...v){recorded.valid=v;return rule},custom(fn){recorded.custom=fn;return rule}};definition.validation?.(rule);return recorded}
